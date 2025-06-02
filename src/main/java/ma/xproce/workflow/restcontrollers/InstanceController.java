@@ -35,9 +35,13 @@ public class InstanceController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<Instance> getInstanceById(@PathVariable Long id) {
-        Instance instance = instanceService.getInstanceById(id);
-        return ResponseEntity.ok(instance);
+    public ResponseEntity<InstanceResponseDTO> getInstanceById(@PathVariable Long id) {
+        try {
+            InstanceResponseDTO instance = instanceService.getInstanceDTOById(id);
+            return instance != null ? ResponseEntity.ok(instance) : ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping

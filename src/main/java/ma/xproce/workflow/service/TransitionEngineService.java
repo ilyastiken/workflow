@@ -36,8 +36,14 @@ public class TransitionEngineService {
                 .orElseThrow(() -> new RuntimeException("Transition introuvable avec l'ID : " + transitionId));
 
         // 3. Vérifier que la transition est valide (CORRECTION ICI)
-        if (!transition.getSourceStatut().equals(instance.getCurrentStatut())) {
-            throw new RuntimeException("Transition invalide : état actuel ne correspond pas au statut source");
+        if (!transition.getSourceStatut().getId().equals(instance.getCurrentStatut().getId())) {
+            throw new RuntimeException(
+                    String.format("Transition invalide : état actuel (%s - %s) ne correspond pas au statut source (%s - %s)",
+                            instance.getCurrentStatut().getId(),
+                            instance.getCurrentStatut().getName(),
+                            transition.getSourceStatut().getId(),
+                            transition.getSourceStatut().getName())
+            );
         }
 
         // 4. Exécuter la transition

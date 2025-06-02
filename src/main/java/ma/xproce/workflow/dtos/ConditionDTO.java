@@ -12,7 +12,6 @@ public class ConditionDTO {
     private String conditionType;
     private boolean isActive;
     private Long statutId;
-    private Long transitionId;
 
     public String getName() {
         return name;
@@ -62,11 +61,4 @@ public class ConditionDTO {
         this.statutId = statutId;
     }
 
-    public Long getTransitionId() {
-        return transitionId;
-    }
-
-    public void setTransitionId(Long transitionId) {
-        this.transitionId = transitionId;
-    }
 }

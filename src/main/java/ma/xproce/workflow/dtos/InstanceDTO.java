@@ -15,7 +15,7 @@ public class InstanceDTO {
     private Long workflowId;
     private String businessKey;
     private String createdBy;
-    private Statut currentStatut;
+    private long currentStatut;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private String status;

@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WorkflowDTO {
-    private String workflow;
+    private String name;
     private String description;
     private String version;
     private boolean isActive;

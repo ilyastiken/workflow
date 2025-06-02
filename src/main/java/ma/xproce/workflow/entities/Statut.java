@@ -32,14 +32,18 @@ public class Statut {
     private Integer position;
 
     @OneToMany(mappedBy = "sourceStatut")
+    @JsonIgnore
     private List<Transition> outgoingTransitions = new ArrayList<>();
 
     @OneToMany(mappedBy = "targetStatut")
+    @JsonIgnore
     private List<Transition> incomingTransitions = new ArrayList<>();
 
     @OneToMany(mappedBy = "currentStatut")
+    @JsonIgnore
     private List<Instance> instances = new ArrayList<>();
 
     @OneToMany(mappedBy = "statut")
+    @JsonIgnore
     private List<Condition> conditions = new ArrayList<>();
 }

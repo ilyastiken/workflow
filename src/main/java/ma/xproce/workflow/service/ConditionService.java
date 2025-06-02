@@ -2,6 +2,7 @@ package ma.xproce.workflow.service;
 
 import jakarta.transaction.Transactional;
 import ma.xproce.workflow.dtos.ConditionDTO;
+import ma.xproce.workflow.dtos.ConditionResponseDTO;
 import ma.xproce.workflow.entities.Condition;
 import ma.xproce.workflow.entities.Statut;
 import ma.xproce.workflow.entities.Transition;
@@ -45,11 +46,6 @@ public class ConditionService {
                 condition.setStatut(statut);
             }
 
-            if (dto.getTransitionId() != null) {
-                Transition transition = transitionRepository.findById(dto.getTransitionId())
-                        .orElseThrow(() -> new RuntimeException("Transition introuvable avec l'ID : " + dto.getTransitionId()));
-                condition.setTransition(transition);
-            }
 
             Condition saved = conditionRepository.save(condition);
             createdConditions.add(saved);
@@ -80,5 +76,35 @@ public class ConditionService {
 
         return savedConditions;
     }
-
+    @Transactional
+    public List<ConditionResponseDTO> addConditionsToTransitionDTO(Long transitionId, List<ConditionDTO> conditionDTOs) {
+        // Utiliser votre méthode existante puis mapper
+        List<Condition> conditions = addConditionsToTransition(transitionId, conditionDTOs);
+        return conditions.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
     }
+    private ConditionResponseDTO mapToResponseDTO(Condition condition) {
+        ConditionResponseDTO.ConditionResponseDTOBuilder builder = ConditionResponseDTO.builder()
+                .id(condition.getId())
+                .name(condition.getName())
+                .expression(condition.getExpression())
+                .description(condition.getDescription())
+                .conditionType(condition.getConditionType())
+                .isActive(condition.isActive())
+                .creationDate(condition.getCreationDate())
+                .modificationDate(condition.getModificationDate());
+
+        if (condition.getStatut() != null) {
+            builder.statutId(condition.getStatut().getId())
+                    .statutName(condition.getStatut().getName())
+                    .attachedTo("STATUT");
+        } else if (condition.getTransition() != null) {
+            builder.transitionId(condition.getTransition().getId())
+                    .transitionName(condition.getTransition().getName())
+                    .attachedTo("TRANSITION");
+        }
+
+        return builder.build();
+    }
+}

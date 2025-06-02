@@ -2,6 +2,7 @@ package ma.xproce.workflow.service;
 
 
 import ma.xproce.workflow.dtos.TransitionDTO;
+import ma.xproce.workflow.dtos.TransitionResponseDTO;
 import ma.xproce.workflow.entities.Statut;
 import ma.xproce.workflow.entities.Transition;
 import ma.xproce.workflow.entities.Workflow;
@@ -60,5 +61,47 @@ public class TransitionService {
 
         return createdTransitions;
     }
+    @Transactional
+    public List<TransitionResponseDTO> addTransitionsToWorkflowDTO(Long workflowId, List<TransitionDTO> transitionDTOs) {
+        // Utiliser votre méthode existante puis mapper
+        List<Transition> transitions = addTransitionsToWorkflow(workflowId, transitionDTOs);
+        return transitions.stream()
+                .map(this::mapToResponseDTO)
+                .toList();
+    }
 
+    private TransitionResponseDTO mapToResponseDTO(Transition transition) {
+        TransitionResponseDTO.TransitionResponseDTOBuilder builder = TransitionResponseDTO.builder()
+                .id(transition.getId())
+                .name(transition.getName())
+                .conditionExpression(transition.getConditionExpression());
+
+        // Informations sur les statuts
+        if (transition.getSourceStatut() != null) {
+            builder.sourceStatutId(transition.getSourceStatut().getId())
+                    .sourceStatutName(transition.getSourceStatut().getName());
+        }
+
+        if (transition.getTargetStatut() != null) {
+            builder.targetStatutId(transition.getTargetStatut().getId())
+                    .targetStatutName(transition.getTargetStatut().getName());
+        }
+
+        // Informations sur le workflow
+        if (transition.getWorkflow() != null) {
+            builder.workflowId(transition.getWorkflow().getId())
+                    .workflowName(transition.getWorkflow().getName());
+        }
+
+        // Compteurs
+        int conditionCount = (transition.getConditions() != null) ? transition.getConditions().size() : 0;
+        int executionCount = (transition.getHistory() != null) ? transition.getHistory().size() : 0;
+
+        builder.conditionCount(conditionCount)
+                .executionCount(executionCount)
+                .hasConditions(conditionCount > 0)
+                .isExecutable(true); // Logique métier à définir
+
+        return builder.build();
+    }
 }

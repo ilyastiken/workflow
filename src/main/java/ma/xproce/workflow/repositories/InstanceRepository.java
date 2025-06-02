@@ -14,6 +14,8 @@ public interface InstanceRepository extends JpaRepository<Instance,Long> {
     List<Instance> findByWorkflow(Workflow workflow);
     List<Instance> findByCreatedBy(String createdBy);
     Optional<Instance> findByBusinessKey(String businessKey);
+    long countByWorkflowIdAndStatus(Long workflowId, String status);
+    long countByWorkflowIdAndStatusNot(Long workflowId, String status);
 
     @Query("SELECT i.currentStatut.id FROM Instance i WHERE i.id = :instanceId")
     Long findCurrentStatutId(@Param("instanceId") Long instanceId);

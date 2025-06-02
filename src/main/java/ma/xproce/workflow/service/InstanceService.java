@@ -127,6 +127,9 @@ public class InstanceService {
 
         return mapToDTO(instanceRepository.save(instance));
     }
-
+    public InstanceResponseDTO getInstanceDTOById(Long id) {
+        Instance instance = instanceRepository.findById(id).orElse(null);
+        return instance != null ? mapToDTO(instance) : null;
+    }
 
 }
