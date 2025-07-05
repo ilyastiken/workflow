@@ -62,6 +62,7 @@ services:
     restart: unless-stopped
     # ⭐ COMMANDE IMPORTANTE : Démarre avec import automatique
     command: ["start-dev", "--import-realm"]
+    
 
 volumes:
   postgres_data:    # Pour Keycloak
