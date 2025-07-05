@@ -2,10 +2,7 @@ package ma.xproce.workflow.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +26,10 @@ public class Workflow {
     private LocalDateTime creationDate;
     private LocalDateTime modificationDate;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String bpmn;
+
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("workflow-statuts")
     @Builder.Default
@@ -43,6 +44,8 @@ public class Workflow {
     @JsonIgnore
     private List<Instance> instances = new ArrayList<>();
 
-
+    @Getter
+    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Passerelle> passerelles;
 
 }

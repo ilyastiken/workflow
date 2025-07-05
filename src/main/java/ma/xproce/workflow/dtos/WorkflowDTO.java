@@ -14,6 +14,7 @@ public class WorkflowDTO {
     private String name;
     private String description;
     private String version;
+    private String bpmn;
     private boolean isActive;
     private String createdBy;
     private LocalDateTime creationDate;

@@ -1,10 +1,13 @@
 package ma.xproce.workflow.restcontrollers;
 
+import jakarta.persistence.EntityNotFoundException;
 import ma.xproce.workflow.dtos.WorkflowDTO;
 import ma.xproce.workflow.dtos.WorkflowResponseDTO;
+import ma.xproce.workflow.entities.Workflow;
 import ma.xproce.workflow.service.WorkflowService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +39,23 @@ public class WorkflowController {
     public ResponseEntity<WorkflowResponseDTO> getWorkflowWithFullDetails(@PathVariable Long id) {
         WorkflowResponseDTO workflow = workflowService.getWorkflowWithFullDetails(id);
         return workflow != null ? ResponseEntity.ok(workflow) : ResponseEntity.notFound().build();
+    }
+    @GetMapping("/{id}/bpmn")
+    public ResponseEntity<String> getWorkflowBpmn(@PathVariable Long id) {
+        try {
+            String bpmn = workflowService.getWorkflowBpmn(id);
+
+            if (bpmn == null || bpmn.trim().isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_XML)
+                    .body(bpmn);
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // ✅ /{id} DOIT ÊTRE EN DERNIER pour éviter les conflits

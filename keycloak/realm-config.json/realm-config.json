@@ -1,0 +1,98 @@
+{
+  "realm": "workflow-realm",
+  "enabled": true,
+  "displayName": "Système de Workflow",
+  "loginWithEmailAllowed": true,
+  "resetPasswordAllowed": true,
+  "bruteForceProtected": true,
+  "clients": [
+    {
+      "clientId": "workflow-app",
+      "name": "Application Workflow",
+      "enabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "workflow-secret-simple-123",
+      "redirectUris": ["http://localhost:3000/*","http://localhost:8081/*"],
+      "webOrigins": ["http://localhost:3000","http://localhost:8081"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect"
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "ADMIN",
+        "description": "Administrateur système - Accès complet"
+      },
+      {
+        "name": "WORKFLOW_MANAGER",
+        "description": "Gestionnaire de workflows"
+      },
+      {
+        "name": "TASK_ASSIGNEE",
+        "description": "Assigné de tâches"
+      },
+      {
+        "name": "USER",
+        "description": "Utilisateur standard"
+      },
+      {
+        "name": "VIEWER",
+        "description": "Observateur en lecture seule"
+      }
+    ]
+  },
+  "users": [
+    {
+      "username": "admin.workflow",
+      "firstName": "Admin",
+      "lastName": "System",
+      "email": "admin@workflow.com",
+      "emailVerified": true,
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["ADMIN"]
+    },
+    {
+      "username": "manager.workflow",
+      "firstName": "Manager",
+      "lastName": "Process",
+      "email": "manager@workflow.com",
+      "emailVerified": true,
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "manager123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["WORKFLOW_MANAGER"]
+    },
+    {
+      "username": "user.workflow",
+      "firstName": "User",
+      "lastName": "Standard",
+      "email": "user@workflow.com",
+      "emailVerified": true,
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["USER", "TASK_ASSIGNEE"]
+    }
+  ],
+  "defaultRoles": ["USER"]
+}

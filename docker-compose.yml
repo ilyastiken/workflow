@@ -1,0 +1,73 @@
+services:
+  # SERVICE 1 : Base de données PostgreSQL (pour Keycloak uniquement)
+  postgres-for-keycloak:
+    image: postgres:13-alpine
+    container_name: keycloak_database
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak_user
+      POSTGRES_PASSWORD: keycloak123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - workflow_network
+    restart: unless-stopped
+
+  # SERVICE 2 : Base de données MySQL (pour votre application Spring Boot)
+  mysql-for-workflow:
+    image: mysql:8.0
+    container_name: workflow_database
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: workflow_db
+      MYSQL_USER: workflow_user
+      MYSQL_PASSWORD: workflow_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - workflow_network
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+
+  # SERVICE 3 : Keycloak avec auto-import
+  keycloak-server:
+    image: quay.io/keycloak/keycloak:26.2.5
+    container_name: keycloak_auth_server
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres-for-keycloak:5432/keycloak
+      KC_DB_USERNAME: keycloak_user
+      KC_DB_PASSWORD: keycloak123
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin123
+
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+      # ⭐ LIGNE IMPORTANTE : Monte le fichier de config pour l'import
+      - ./keycloak/realm-config.json:/opt/keycloak/data/import/realm-config.json:ro
+    depends_on:
+      - postgres-for-keycloak
+    networks:
+      - workflow_network
+    restart: unless-stopped
+    # ⭐ COMMANDE IMPORTANTE : Démarre avec import automatique
+    command: ["start-dev", "--import-realm"]
+
+volumes:
+  postgres_data:    # Pour Keycloak
+  keycloak_data:    # Pour Keycloak
+  mysql_data:       # Pour votre application
+
+networks:
+  workflow_network:
+    driver: bridge

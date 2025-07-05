@@ -1,5 +1,6 @@
 package ma.xproce.workflow.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import ma.xproce.workflow.dtos.StatutDTO;
 import ma.xproce.workflow.dtos.TransitionDTO;
@@ -120,6 +121,19 @@ public class WorkflowService {
                 .map(this::mapToResponseDTO)
                 .orElse(null);
     }
+    public Workflow findById(Long id) {
+        return workflowRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Workflow not found with id: " + id));
+    }
+
+
+    public String getWorkflowBpmn(Long id) {
+        Workflow workflow = findById(id);
+        if (workflow.getBpmn() != null)
+            return workflow.getBpmn();
+        else
+            return "";
+    }
 
     public List<WorkflowResponseDTO> getActiveWorkflowsDTO() {
         try {
@@ -145,6 +159,7 @@ public class WorkflowService {
                 .version(dto.getVersion())
                 .isActive(dto.isActive())
                 .createdBy(dto.getCreatedBy())
+                .bpmn(dto.getBpmn())
                 .creationDate(LocalDateTime.now())
                 .modificationDate(LocalDateTime.now())
                 .statuts(new ArrayList<>())
@@ -196,10 +211,6 @@ public class WorkflowService {
                 .map(this::mapToResponseDTOWithFullDetails)
                 .orElse(null);
     }
-
-    // =====================================================
-    // MAPPERS PRIVÉS
-    // =====================================================
 
     private WorkflowResponseDTO mapToResponseDTO(Workflow workflow) {
         // Mapper les statuts avec gestion des valeurs nulles
